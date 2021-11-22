@@ -67,34 +67,11 @@ public class signup {
 		//get username
 		System.out.println("Enter Username: ");
 		String username = scanner.nextLine();
-		String line = "";  
-		String splitBy = ",";
-		boolean taken = false;
-		while (!taken) {
-			try {  
-				BufferedReader br = new BufferedReader(new FileReader("userinfo.csv"));  
-				while ((line = br.readLine()) != null) {  
-					String[] user = line.split(splitBy);
-					if (user[0].equals(username)) {
-						System.out.println("Username is taken");
-						System.out.println("Enter Username: ");
-						username = scanner.nextLine();
-						break;
-						
-					}
-				}  
-			}
-			catch (IOException e) {  
-				e.printStackTrace();  
-			}
-		}
-		
 		while (map.containsKey(username)) {
 			System.out.println("Username is taken");
 			System.out.println("Enter Username: ");
 			username = scanner.nextLine();
 		}
-		
 		System.out.println("Enter Password: ");
 		String password = scanner.nextLine();
 
