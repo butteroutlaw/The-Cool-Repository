@@ -128,6 +128,7 @@ public class login {
 					System.out.println("Successfully logged in");
 				}
 				else {
+					System.out.println("You are locked out for 20 seconds");
 					Thread.sleep(20000);
 				}
 			}
