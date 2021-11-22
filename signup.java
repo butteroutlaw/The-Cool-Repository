@@ -1,192 +1,235 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 public class signup {
-	static HashMap<String, String> map;
-	static HashMap<String, String> q1;
-	static HashMap<String, String> q2;
-	static HashMap<String, String> q3;
-	static HashMap<String, String> q4;
-	static HashMap<String, String> q5;
-	static HashMap<String, String> q6;
-	static HashMap<String, String> q7;
-	public signup() {
-		map = new HashMap<>();
-		q1 = new HashMap<>();
-		q2 = new HashMap<>();
-		q3 = new HashMap<>();
-		q4 = new HashMap<>();
-		q5 = new HashMap<>();
-		q6 = new HashMap<>();
-		q7 = new HashMap<>();
-	}
-	
+	static HashMap<String, String> map = new HashMap<String, String>();
+	static HashMap<String, String>[] first = new HashMap[7];
+	static HashMap<String, String>[] second = new HashMap[7];
+	static String region = "";
+	static String[] qs = { "1. What city were you born in?", "2. What is your oldest sibling's middle name?",
+			"3. What was the first concert you attended?", "4. What was the make and model of your first car?",
+			"5. In what city or town did your parents meet?", "6. What was the name of your first pet?",
+			"7. What is your mother's maiden name?" };
+
+
+	//get functions
 	public static HashMap<String, String> getMap() {
 		return map;
 	}
-	public static HashMap<String, String> getq1() {
-		return q1;
+	public static HashMap<String, String>[] getFirst() {
+		return first;
 	}
-	public static HashMap<String, String> getq2() {
-		return q2;
+	public static HashMap<String, String>[] getSecond() {
+		return second;
 	}
-	public static HashMap<String, String> getq3() {
-		return q3;
+	public static String getRegion() {
+		return region;
 	}
-	public static HashMap<String, String> getq4() {
-		return q4;
-	}
-	public static HashMap<String, String> getq5() {
-		return q5;
-	}
-	public static HashMap<String, String> getq6() {
-		return q6;
-	}
-	public static HashMap<String, String> getq7() {
-		return q7;
+	public static String[] getQs() {
+		return qs;
 	}
 	
-	public static void main(String[] args) {
+	//get ip address of user
+	public static String getIPAddress() {
+		String ip = "";
+		try {
+			URL url_name = new URL("https://checkip.amazonaws.com/");
+			
+			Scanner scanner = new Scanner(url_name.openStream());
+			ip = scanner.nextLine().trim();
+		}
+		catch (Exception e) {
+			ip = "";
+			System.out.println(e.getMessage());
+		}
+		return ip;
+	}
+
+	//main
+	public static void main(String[] args) throws IOException {
 		Scanner scanner = new Scanner(System.in);
-		
+
 		//title
-		System.out.println("Title");
+		System.out.println("Password Protector");
 		System.out.println("Sign up");
-		
-		//put username and password in map
+
+		//get username
 		System.out.println("Enter Username: ");
 		String username = scanner.nextLine();
+		String line = "";  
+		String splitBy = ",";
+		boolean taken = false;
+		while (!taken) {
+			try {  
+				BufferedReader br = new BufferedReader(new FileReader("/src/userinfo.csv"));  
+				while ((line = br.readLine()) != null) {  
+					String[] user = line.split(splitBy);
+					if (user[0].equals(username)) {
+						System.out.println("Username is taken");
+						System.out.println("Enter Username: ");
+						username = scanner.nextLine();
+						break;
+						
+					}
+				}  
+			}
+			catch (IOException e) {  
+				e.printStackTrace();  
+			}
+		}
+		
+		while (map.containsKey(username)) {
+			System.out.println("Username is taken");
+			System.out.println("Enter Username: ");
+			username = scanner.nextLine();
+		}
+		
 		System.out.println("Enter Password: ");
 		String password = scanner.nextLine();
+
+		//common passwords - https://github.com/danielmiessler/SecLists/blob/master/Passwords/2020-200_most_used_passwords.txt
+		boolean weak = false;
+		File file = new File("src/commonpasswords");
+		Scanner fileScanner = new Scanner(file);
+		while (!weak && fileScanner.hasNextLine()) {
+			String common = fileScanner.nextLine();
+			if (password.equals(common)) {
+				System.out.println("Weak");
+				weak = true;
+			}
+		}
 		
-		//common passwords and password strength
-		
-		
+		//password strength
+		if (!weak) {
+			Set<Character> set = new HashSet<Character>(Arrays.asList('!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '+'));
+			boolean hasLower = false, hasUpper = false, hasDigit = false, specialChar = false;
+			for (char i : password.toCharArray()) {
+	            if (Character.isLowerCase(i))
+	                hasLower = true;
+	            if (Character.isUpperCase(i))
+	                hasUpper = true;
+	            if (Character.isDigit(i))
+	            	hasDigit = true;
+	            if (set.contains(i))
+	            	specialChar = true;
+			}
+			if (hasDigit && hasLower && hasUpper && specialChar && (password.length() >= 8)) {
+				System.out.println("Strong");
+			}
+			else if ((hasLower || hasUpper || specialChar) && (password.length() >= 6)) {
+				System.out.println("Moderate");
+			}
+			else {
+				System.out.println("Weak");
+			}
+		}
+
 		//put username password in map
 		map.put(username, password);
-		System.out.println(map);
-		
+		//System.out.println(map);
+
 		//ip address - https://www.ipinfodb.com/api
-		/*
-		193.118.53.194 (NL)
-		45.146.164.110 (RU)
-		104.248.163.61 (GB)
-		45.146.164.110 (RU)
-		51.158.156.78, (FR)
-		*/
-		String ip = "";
-		try (java.util.Scanner s = new java.util.Scanner(new java.net.URL("https://api.ipinfodb.com/v3/ip-city?key=cc07ab6d4c0dbdd82bda6aee847aad3247c92633101fb7d309776d9cbc71e7df&ip=193.118.53.194").openStream(), "UTF-8").useDelimiter("\\A")) {
-			ip = s.next();
-			System.out.println(ip);
+		//System.out.println(getIPAddress());
+		String ipAddress = getIPAddress();
+		try (java.util.Scanner s = new java.util.Scanner(new java.net.URL(
+				"https://api.ipinfodb.com/v3/ip-city?key=cc07ab6d4c0dbdd82bda6aee847aad3247c92633101fb7d309776d9cbc71e7df&ip="+ipAddress)
+				.openStream(),
+				"UTF-8").useDelimiter("\\A")) {
+			region = s.next();
+			System.out.println(region);
 		} catch (java.io.IOException e) {
 			e.printStackTrace();
+		}
+
+		//initialize questions arrays
+		for (int i = 0; i < 7; i++) {
+			first[i] = new HashMap<String, String>();
+		}
+		for (int i = 0; i < 7; i++) {
+			second[i] = new HashMap<String, String>();
 		}
 		
 		//security questions - https://www.okta.com/blog/2021/03/security-questions/
 		//choice 1
-		System.out.println("Security Questions (Enter the number of your first choice)");
-		System.out.println("1. What city were you born in?");
-		System.out.println("2. What is your oldest sibling's middle name?");
-		System.out.println("3. What was the first concert you attended?");
-		System.out.println("4. What was the make and model of your first car?");
-		System.out.println("5. In what city or town did your parents meet?");
-		System.out.println("6. What was the name of your first pet?");
-		System.out.println("7. What is your mother's maiden name?");
-		int choice1 = scanner.nextInt();
-		if (choice1 == 1) {
-			System.out.println("What city were you born in?");
-			String answer1 = scanner.next();
-			q1.put(username, answer1);
+		int choice1 = 1;
+		String answer1 = "";
+		while (choice1 >= 1 && choice1 <= 7) {
+			System.out.println("Security Questions (Enter the number of your first choice)");
+			for (int i = 0; i < qs.length; i++) {
+				System.out.println(qs[i]);
+			}
+			choice1 = scanner.nextInt();
+			if (choice1 < 1 || choice1 > 7) {
+				System.out.println("Error");
+				choice1 = 1;
+			} 
+			else {
+				System.out.println(qs[choice1 - 1].substring(3));
+				answer1 = scanner.next();
+				first[choice1 - 1].put(username, answer1);
+				break;
+			}
+			//System.out.println(questions[0]);
 		}
-		else if (choice1 == 2) {
-			System.out.println("What is your oldest sibling's middle name?");
-			String answer1 = scanner.next();
-			q2.put(username, answer1);
-		}
-		else if (choice1 == 3) {
-			System.out.println("What was the first concert you attended?");
-			String answer1 = scanner.next();
-			q3.put(username, answer1);
-		}
-		else if (choice1 == 4) {
-			System.out.println("What is your oldest sibling's middle name?");
-			String answer1 = scanner.next();
-			q4.put(username, answer1);
-		}
-		else if (choice1 == 5) {
-			System.out.println("What is your oldest sibling's middle name?");
-			String answer1 = scanner.next();
-			q5.put(username, answer1);
-		}
-		else if (choice1 == 6) {
-			System.out.println("What was the name of your first pet?");
-			String answer1 = scanner.next();
-			q6.put(username, answer1);
-		}
-		else if (choice1 == 7) {
-			System.out.println("What is your mother's maiden name?");
-			String answer1 = scanner.next();
-			q7.put(username, answer1);
-		}
-		else {
-			System.out.println("Error");
-		}
-		System.out.println(q1);
-		
+
 		//choice 2
-		System.out.println("Security Questions (Enter the number of your second choice)");
-		System.out.println("1. What city were you born in?");
-		System.out.println("2. What is your oldest sibling's middle name?");
-		System.out.println("3. What was the first concert you attended?");
-		System.out.println("4. What was the make and model of your first car?");
-		System.out.println("5. In what city or town did your parents meet?");
-		System.out.println("6. What was the name of your first pet?");
-		System.out.println("7. What is your mother's maiden name?");
-		int choice2 = scanner.nextInt();
-		if (choice1 == choice2) {
-			System.out.println("You have already chosen this question");
+		int choice2 = 1;
+		String answer2 = "";
+		while (choice2 >= 1 && choice1 <= 7) {
+			System.out.println("Security Questions (Enter the number of your second choice)");
+			for (int i = 0; i < qs.length; i++) {
+				System.out.println(qs[i]);
+			}
+			choice2 = scanner.nextInt();
+			if (choice1 == choice2) {
+				System.out.println("You have already chosen this question");
+				choice2 = 1;
+			} 
+			else if (choice2 < 1 || choice2 > 7) {
+				System.out.println("Error");
+				choice2 = 1;
+			} 
+			else {
+				System.out.println(qs[choice2 - 1].substring(3));
+				answer2 = scanner.next();
+				second[choice2 - 1].put(username, answer2);
+				break;
+			}
+			//System.out.println(questions[1]);
 		}
-		if (choice2 == 1) {
-			System.out.println("What city were you born in?");
-			String answer2 = scanner.next();
-			q1.put(username, answer2);
-		}
-		else if (choice2 == 2) {
-			System.out.println("What is your oldest sibling's middle name?");
-			String answer2 = scanner.next();
-			q2.put(username, answer2);
-		}
-		else if (choice2 == 3) {
-			System.out.println("What was the first concert you attended?");
-			String answer2 = scanner.next();
-			q3.put(username, answer2);
-		}
-		else if (choice2 == 4) {
-			System.out.println("What is your oldest sibling's middle name?");
-			String answer2 = scanner.next();
-			q4.put(username, answer2);
-		}
-		else if (choice2 == 5) {
-			System.out.println("What is your oldest sibling's middle name?");
-			String answer2 = scanner.next();
-			q5.put(username, answer2);
-		}
-		else if (choice2 == 6) {
-			System.out.println("What was the name of your first pet?");
-			String answer2 = scanner.next();
-			q6.put(username, answer2);
-		}
-		else if (choice2 == 7) {
-			System.out.println("What is your mother's maiden name?");
-			String answer2 = scanner.next();
-			q7.put(username, answer2);
-		}
-		else {
-			System.out.println("Error");
-		}
-		System.out.println(q2);
+
+		//save user info
+		FileWriter pw = new FileWriter("userinfo.csv", true);
+		pw.append(username);
+		pw.append(",");
+		pw.append(password);
+		pw.append(",");
+		pw.append("" + choice1);
+		pw.append(",");
+		pw.append(answer1);
+		pw.append(",");
+		pw.append("" + choice2);
+		pw.append(",");
+		pw.append(answer2);
+		pw.append(",");
+		pw.append(region);
+		pw.append("\n");
+		pw.flush();
+		pw.close();
 		
-		//close scanner
+		System.out.println("You have signed up!");
+		
 		scanner.close();
 	}
 }
