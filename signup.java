@@ -72,7 +72,7 @@ public class signup {
 		boolean taken = false;
 		while (!taken) {
 			try {  
-				BufferedReader br = new BufferedReader(new FileReader("/src/userinfo.csv"));  
+				BufferedReader br = new BufferedReader(new FileReader("userinfo.csv"));  
 				while ((line = br.readLine()) != null) {  
 					String[] user = line.split(splitBy);
 					if (user[0].equals(username)) {
@@ -100,7 +100,7 @@ public class signup {
 
 		//common passwords - https://github.com/danielmiessler/SecLists/blob/master/Passwords/2020-200_most_used_passwords.txt
 		boolean weak = false;
-		File file = new File("src/commonpasswords");
+		File file = new File("commonpasswords.txt");
 		Scanner fileScanner = new Scanner(file);
 		while (!weak && fileScanner.hasNextLine()) {
 			String common = fileScanner.nextLine();
