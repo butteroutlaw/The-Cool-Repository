@@ -116,6 +116,10 @@ public class login {
 					count = 0;
 					Thread.sleep(20000);
 				}
+				//user logs in
+				else if (password.equals(ogPassword)) {
+					System.out.println("Successfully logged in");
+				}
 			}
 		}
 		//password matches username but ip address is unfamiliar
