@@ -115,14 +115,14 @@ public class signup {
 			Set<Character> set = new HashSet<Character>(Arrays.asList('!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '+'));
 			boolean hasLower = false, hasUpper = false, hasDigit = false, specialChar = false;
 			for (char i : password.toCharArray()) {
-	            if (Character.isLowerCase(i))
-	                hasLower = true;
-	            if (Character.isUpperCase(i))
-	                hasUpper = true;
-	            if (Character.isDigit(i))
-	            	hasDigit = true;
-	            if (set.contains(i))
-	            	specialChar = true;
+				if (Character.isLowerCase(i))
+					hasLower = true;
+				if (Character.isUpperCase(i))
+					hasUpper = true;
+				if (Character.isDigit(i))
+					hasDigit = true;
+				if (set.contains(i))
+					specialChar = true;
 			}
 			if (hasDigit && hasLower && hasUpper && specialChar && (password.length() >= 8)) {
 				System.out.println("Strong");
