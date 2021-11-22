@@ -1,4 +1,4 @@
-# Password-Protector
+# Password Protector
 
 A password asks for user input.
 A password allows someone to access.
