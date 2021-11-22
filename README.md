@@ -1,8 +1,8 @@
 # The-Cool-Repository
 
-A password asks for user input
-A password allows someone to access
-A password that is not correctly inputted is denied access
+A password asks for user input.
+A password allows someone to access.
+A password that is not correctly inputted is denied access.
 
 If security questions are turned on:
     User picks:   writes?
